@@ -31,15 +31,15 @@ ex. : +989********"
 green "شماره خودرا با پیش کد کشور وارد کنید
 مثال : +989********"
 read Phone
-./tg -p tabi-$Profile --login --phone =$Phone
+./tg -p bot-$Profile --login --phone =$Phone
 white "ربات شما ساخته شد.برای اجرا کردن آن"
-green "./tabi $Profile"
+green "./bot $Profile"
 white "جهت اجرا به شکل اتولانچ هم از "
-green "tmux new-session -s script 'bash tabi autolaunch'"
+green "tmux new-session -s script 'bash bot autolaunch'"
 white "استفاده کنید"
 }
 create() {
-  name=tabi
+  name=bot
   if [[ -e $name.lua ]] ; then
       i=1
       while [[ -e $name-$i.lua ]] ; do
@@ -54,25 +54,25 @@ ex. : +989********"
 green "شماره خودرا با پیش کد کشور وارد کنید
 مثال : +989********"
 read Phone
-./tg -p tabi-$i --login --phone =$Phone
-echo "" > tabi-$i.sh
-exec 3<> tabi-$i.sh
+./tg -p bot-$i --login --phone =$Phone
+echo "" > bot-$i.sh
+exec 3<> bot-$i.sh
     # Let's print some text to fd 3
     echo "while true; do" >&3
-    echo "./tg -p tabi-$i -s ${HOME}/tabi/tabi-$i.lua | grep -v" >&3
+    echo "./tg -p bot-$i -s ${HOME}/bot/bot-$i.lua | grep -v" >&3
     echo "done" >&3
 	
 # Close fd 3
 exec 3>&-
-chmod 777 tabi-$i.sh
-cat tabi.lua >> tabi-$i.lua
-sed -i 's/BOT-ID/'$i'/g' tabi-$i.lua
-#cat tabi.lua >> tabi-$i.lua
-#sed -i 's/BOT-ID/'$i'/g' tabi-$i.lua
+chmod 777 bot-$i.sh
+cat bot.lua >> bot-$i.lua
+sed -i 's/BOT-ID/'$i'/g' bot-$i.lua
+#cat bot.lua >> bot-$i.lua
+#sed -i 's/BOT-ID/'$i'/g' bot-$i.lua
 white "ربات شما ساخته شد.برای اجرا کردن آن"
-green "./tabi $i"
+green "./bot $i"
 white "جهت اجرا به شکل اتولانچ هم از "
-green "tmux new-session -s script 'bash tabi autolaunch'"
+green "tmux new-session -s script 'bash bot autolaunch'"
 white "استفاده کنید"
 }
 usage() {
@@ -80,19 +80,19 @@ printf "\e[1;36m"
   cat <<EOF
 راهنمای استفاده از راه انداز تبلیغاتی
 :گزینه ها
-./tabi create
+./bot create
 ساخت ربات جدید
-./tabi install
+./bot install
 نصب پیش نیاز های تبلیغاتی
-./tabi login
+./bot login
 ورود به یک ربات از قبل ساخته شده
-./tabi help
+./bot help
 نمایش این متن
-./tabi clear
+./bot clear
 پاک سازی یک ربات
-tmux new-session -s script "bash tabi autolaunch"
+tmux new-session -s script "bash bot autolaunch"
 راه‌اندازی تمام ربات ها هر 20 دقیقه
-./tabi auto
+./bot auto
 راه اندازی با tmux
 EOF
 printf "%s\n\e[0;39;49m"
@@ -102,10 +102,10 @@ clear() {
        شماره تبلیغاتیی که میخواهید آن را حذف کنید وارد کنید
 '
   read -rp ' ' ID
-  rm -rf ~/.tg/tabi-"$ID"
-  rm -rf tabi-"$ID".lua
- rm -rf tabi-"$ID".sh
-  rm -rf rm -rf ~/.telegram-bot/tabi-"$ID"
+  rm -rf ~/.tg/bot-"$ID"
+  rm -rf bot-"$ID".lua
+ rm -rf bot-"$ID".sh
+  rm -rf rm -rf ~/.telegram-bot/bot-"$ID"
   red '
      تبلیغاتی شماره '$ID' با موفقیت حذف شد
 '
@@ -113,8 +113,8 @@ clear() {
 }
 autolaunch() {
 while true ; do
-    for tabi in tabi-*.sh ; do
-      tab="${tabi%.*}"
+    for bot in bot-*.sh ; do
+      tab="${bot%.*}"
       ltab="${tab/-/ }"
 screen -S $tab -X quit
 #      tmux kill-session -t $tab
@@ -147,8 +147,8 @@ rm -rf ~/.telegram-bot/$tab/data/wallpapers
     sleep 1200
   done 
   while true ; do
-for tabi in tabi-*.sh ; do
-      tab="${tabi%.*}"
+for bot in bot-*.sh ; do
+      tab="${bot%.*}"
       ltab="${tab/-/ }"
 rm -rf ~/.telegram-bot/$tab/data/db.sqlite
   sleep 12600
@@ -166,7 +166,7 @@ prtgrn '
 	*//Enter SUDO ID(who can add sudo with #addallsudo or #addsudo):
  '
  read sudoid
-	sed -i 's/123456789/'$sudoid'/g' tabi.lua
+	sed -i 's/123456789/'$sudoid'/g' bot.lua
 	prtgrn '
 	*//Change Nameservers to Google:
  '
@@ -210,11 +210,11 @@ prtgrn '
 	sudo service redis-server restart
 	white '
 تبلیغاتی نصب شد.حال برای راه اندازی از دستور 
-./tabi create
+./bot create
 استفاده کنید'
 green '
 برای دریافت لیست لانچر دستور
-./tabi help
+./bot help
 راارسال کنید'
  ;;
     N|n|خیر)
@@ -234,7 +234,7 @@ esac
 }
 auto() {
 	tmux kill-session -t script
-tmux new-session -s script "bash tabi autolaunch"
+tmux new-session -s script "bash bot autolaunch"
 }
 
 case $1 in
@@ -261,10 +261,10 @@ case $1 in
   ;;
   a*)
     id="${1/a/}"
-    if [ -a "$THIS_DIR"/tabi-"$id".sh ]; then
-      screen -x -s tabi-"$id" quit
+    if [ -a "$THIS_DIR"/bot-"$id".sh ]; then
+      screen -x -s bot-"$id" quit
       while true ; do
-        screen -s tabi-"$id" ./tabi-"$id".sh
+        screen -s bot-"$id" ./bot-"$id".sh
         sleep 10
       done
     else
@@ -275,8 +275,8 @@ case $1 in
     clear
   ;;
   *)
-    if [ -a "$THIS_DIR"/tabi-"$1".sh ]; then
-      ./tabi-"$1".sh
+    if [ -a "$THIS_DIR"/bot-"$1".sh ]; then
+      ./bot-"$1".sh
     else
     usage
     fi
